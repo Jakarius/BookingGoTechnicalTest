@@ -16,8 +16,14 @@ public class TaxiRESTAPI {
     public static void main(String[] args) {
 
         try {
-            HttpServer server = null;
-            server = HttpServer.create(new InetSocketAddress(8000), 0);
+
+            int portNum = 8000;
+            if (args.length > 0) {
+                portNum = Integer.parseInt(args[0]);
+            }
+
+            HttpServer server;
+            server = HttpServer.create(new InetSocketAddress(portNum), 0);
             server.createContext("/taxiREST", new TaxiRequestHandler());
             server.setExecutor(null);
             server.start();
@@ -34,7 +40,6 @@ public class TaxiRESTAPI {
             URI incoming = httpExchange.getRequestURI();
             String requestString = incoming.getQuery();
 
-            Map<String, String> params = new HashMap<>();
             String[] split = requestString.split("&");
 
             int passengers = -1;
@@ -57,8 +62,6 @@ public class TaxiRESTAPI {
                     dropoff = new Coordinate(coordString);
                 }
             }
-
-            System.out.println(passengers + " " + pickup + "  "+ dropoff);
 
             String jsonResponse = "";
             if (passengers > 0 && pickup != null && dropoff != null) {
